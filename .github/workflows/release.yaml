@@ -1,0 +1,50 @@
+name: Create a release
+on:
+  push:
+    branches:
+      - '!**'
+      - 'main'
+jobs:
+  release:
+    if: ${{ github.event.repository.name != 'terraform-template' }} || ${{ github.event.label.name == 'template_sync' }} # Do not run IF it is the template repo
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # Shallow clones should be disabled so we can bump on previous tags
+          fetch-tags: true # This should negate the need for fetch-depth 0 but it seems both are required
+      - name: "Fix initial commit message"
+        uses: "stefanzweifel/git-auto-commit-action@v4"
+        with:
+          commit_message: "fix: Initial Commit"
+          commit_options: "--amend"
+          push_options: "--force"
+          tagging_message: 'v0.0.3'
+          skip_fetch: true
+      - name: Check commit
+        if: always()
+        uses: oat-sa/conventional-commit-action@v0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Set up git-cliff
+        uses: kenji-miyake/setup-git-cliff@v2
+      - name: Get next version
+        id: next_version
+        run: |
+          echo NEXT_VERSION=`git-cliff --bumped-version` >> "$GITHUB_ENV"
+      - name: Bump version and push tag
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v6.2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create a GitHub release
+        id: release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ steps.tag_version.outputs.new_tag }}
+          name: Release ${{ steps.tag_version.outputs.new_tag }}
+          body: ${{ steps.tag_version.outputs.changelog }}
+          
