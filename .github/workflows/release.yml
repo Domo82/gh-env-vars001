@@ -1,0 +1,42 @@
+name: Create a release
+on:
+  push:
+    branches:
+      - '!**'
+      - 'main'
+jobs:
+  release:
+    if: ${{ github.event.repository.name != 'terraform-template' }} || ${{ github.event.label.name == 'template_sync' }} # Do not run IF it is the template repo
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # Shallow clones should be disabled so we can bump on previous tags
+          fetch-tags: true # This should negate the need for fetch-depth 0 but it seems both are required
+      - name: Get next version
+        id: next_version
+        uses: orhun/git-cliff-action@v4
+      - run: |
+          echo NEXT_VERSION=`git cliff --bumped-version` >> "$GITHUB_ENV"
+      - name: Cliff Release
+        uses: orhun/git-cliff-action@v4
+        id: release
+      - run: |
+         git cliff --bump minor
+      - name: Generate a changelog
+        uses: orhun/git-cliff-action@v3
+        with:
+          config: cliff.toml
+          args: --verbose
+        env:
+          OUTPUT: CHANGELOG.md
+          GITHUB_REPO: ${{ github.repository }}
+      - name: Upload github release
+        uses: softprops/action-gh-release@v1
+        with:
+          body_path: GITHUB_CHANGELOG.md
+          tag_name: ${{ steps.release.outputs.version }}
+          
