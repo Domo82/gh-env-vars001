@@ -16,6 +16,14 @@ jobs:
         with:
           fetch-depth: 0 # Shallow clones should be disabled so we can bump on previous tags
           fetch-tags: true # This should negate the need for fetch-depth 0 but it seems both are required
+      - name: Generate a changelog
+        uses: orhun/git-cliff-action@v4
+        id: git-cliff
+        with:
+          config: cliff.toml
+          args: --verbose
+        env:
+          OUTPUT: CHANGELOG.md
       - name: Bump version and push tag
         id: tag_version
         uses: mathieudutour/github-tag-action@v6.2
@@ -27,5 +35,5 @@ jobs:
         with:
           tag: ${{ steps.tag_version.outputs.new_tag }}
           name: Release ${{ steps.tag_version.outputs.new_tag }}
-          body: ${{ steps.tag_version.outputs.changelog }}
+          body: ${{ steps.git-cliff.outputs.changelog }}
           
