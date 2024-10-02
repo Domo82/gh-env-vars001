@@ -43,6 +43,11 @@ postprocessors = [
 # output file path
 # output = "test.md"
 
+[bump]
+features_always_bump_minor = true
+breaking_always_bump_major = true
+initial_tag = "0.1.0"
+
 [git]
 # parse the commits based on https://www.conventionalcommits.org
 conventional_commits = true
