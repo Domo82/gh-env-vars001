@@ -20,11 +20,11 @@ jobs:
         uses: kenji-miyake/setup-git-cliff@v2
       - name: Get next version
         id: next_version
-      - run: |
+        run: |
           echo NEXT_VERSION=`git-cliff --bumped-version` >> "$GITHUB_ENV"
       - name: Cliff Release
         id: release
-      - run: |
+        run: |
          git-cliff --bump minor
       - name: Generate a changelog
         uses: orhun/git-cliff-action@v3
