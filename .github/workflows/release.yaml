@@ -16,6 +16,8 @@ jobs:
         with:
           fetch-depth: 0 # Shallow clones should be disabled so we can bump on previous tags
           fetch-tags: true # This should negate the need for fetch-depth 0 but it seems both are required
+      - name: Run commitlint
+        uses: opensource-nepal/commitlint@v1
       - name: Generate a changelog
         uses: orhun/git-cliff-action@v4
         id: git-cliff
