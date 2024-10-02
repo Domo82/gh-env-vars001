@@ -16,13 +16,13 @@ jobs:
         with:
           fetch-depth: 0 # Shallow clones should be disabled so we can bump on previous tags
           fetch-tags: true # This should negate the need for fetch-depth 0 but it seems both are required
+      - name: Set up git-cliff
+        uses: kenji-miyake/setup-git-cliff@v2
       - name: Get next version
         id: next_version
-        uses: orhun/git-cliff-action@v4
       - run: |
           echo NEXT_VERSION=`git-cliff --bumped-version` >> "$GITHUB_ENV"
       - name: Cliff Release
-        uses: orhun/git-cliff-action@v4
         id: release
       - run: |
          git-cliff --bump minor
