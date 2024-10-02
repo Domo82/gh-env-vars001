@@ -30,7 +30,7 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           file: binary_release.zip
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          repo_token: ${{ secrets.GH_PAT }}
           tag: ${{ github.ref }}
           body: ${{ steps.git-cliff.outputs.content }}
       - name: Bump version and push tag
