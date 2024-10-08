@@ -9,19 +9,26 @@ jobs:
     if: ${{ github.event.repository.name != 'terraform-template' }} || ${{ github.event.label.name == 'template_sync' }} # Do not run IF it is the template repo
     runs-on: ubuntu-latest
     env:
-      TOKEN: ${{ secrets.GH_PAT }}
+      TOKEN: ${{ secrets.GH_PAT }}}}
     permissions:
       contents: write
     steps:
-      - name: Checkout Repo
+      - name: Checkout Repo!!!
         uses: actions/checkout@v3
         with:
           fetch-depth: 0 # Shallow clones should be disabled so we can bump on previous tags
           fetch-tags: true # This should negate the need for fetch-depth 0 but it seems both are required
 
-      - name: Check for conventional commit
-        uses: opensource-nepal/commitlint@v1
-
+      - name: Install Conventional Commits CLI
+        run: npm install -g @commitlint/cli @commitlint/config-conventional
+  
+      - name: Get latest tag
+        id: get-latest-tag
+        run: echo "::set-output name=tag::$(git describe --tags `git rev-list --tags --max-count=1`)"
+  
+      - name: Check Conventional Commits
+        run: commitlint --from $(git describe --tags --abbrev=0 HEAD^) --to HEAD
+      
       - name: Bump version and push tag
         id: tag_version
         uses: mathieudutour/github-tag-action@v6.2
@@ -44,4 +51,4 @@ jobs:
         with:
           tag: ${{ steps.tag_version.outputs.new_tag }}
           name: Release ${{ steps.tag_version.outputs.new_tag }}
-          body: ${{ steps.git-cliff.outputs.content }}          
+          body: ${{ steps.git-cliff.outputs.content }}    
