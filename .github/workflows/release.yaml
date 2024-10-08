@@ -9,7 +9,7 @@ jobs:
     if: ${{ github.event.repository.name != 'terraform-template' }} || ${{ github.event.label.name == 'template_sync' }} # Do not run IF it is the template repo
     runs-on: ubuntu-latest
     env:
-      TOKEN: ${{ secrets.GH_PAT }}}}
+      TOKEN: ${{ secrets.GH_PAT }}
     permissions:
       contents: write
     steps:
