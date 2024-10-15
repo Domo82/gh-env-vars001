@@ -42,12 +42,13 @@ jobs:
           fetch-depth: 0
           
       - name: Bump version and push tag
-        id: tag_version
-        uses: mathieudutour/github-tag-action@v6.2
-        with:
-          default_bump: major
-          custom_tag: "${{ steps.tag_version.outputs.new_tag }}-beta"
-          github_token: ${{ env.GH_TOKEN }}
+        uses: anothrNick/github-tag-action@v1
+        env:
+          GITHUB_TOKEN: ${{ env.GH_TOKEN }}
+          DEFAULT_BUMP: major
+          WITH_V: true
+          PRERELEASE_SUFFIX: beta
+          PRERELEASE: true
           
   major-rc:
     if : github.event.inputs.type == 'major-rc'
