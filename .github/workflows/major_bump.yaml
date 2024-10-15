@@ -1,0 +1,70 @@
+name: Cocogitto major bump
+on: 
+  workflow_dispatch:
+    inputs:
+      type:
+        description: 'Major bump type'
+        required: true
+        default: 'major'
+        type: choice
+        options: 
+          - major
+          - major-beta
+          - major-rc
+jobs:
+  major:
+    if : github.event.inputs.type == 'major'
+    permissions: write-all
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GH_PAT }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: Bump version and push tag
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v6.2
+        with:
+          default_bump: major
+          append_to_pre_release_tag: beta
+          github_token: ${{ env.GH_PAT }}
+          
+          
+  major-beta:
+    if : github.event.inputs.type == 'major-beta'
+    permissions: write-all
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: Bump version and push tag
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v6.2
+        with:
+          default_bump: major
+          append_to_pre_release_tag: beta
+          github_token: ${{ env.GH_PAT }}
+          
+  major-rc:
+    if : github.event.inputs.type == 'major-rc'
+    permissions: write-all
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: Bump version and push tag
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v6.2
+        with:
+          default_bump: major
+          append_to_pre_release_tag: rc
+          github_token: ${{ env.GH_PAT }}
