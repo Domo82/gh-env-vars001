@@ -42,13 +42,13 @@ jobs:
           fetch-depth: 0
           
       - name: Bump version and push tag
-        uses: anothrNick/github-tag-action@v1
-        env:
-          GITHUB_TOKEN: ${{ env.GH_TOKEN }}
-          DEFAULT_BUMP: major
-          WITH_V: true
-          PRERELEASE_SUFFIX: beta
-          PRERELEASE: true
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v6.2
+        with:
+          default_bump: major
+          default_prerelease_bump: premajor
+          append_to_pre_release_tag: -beta
+          github_token: ${{ env.GH_TOKEN }}
           
   major-rc:
     if : github.event.inputs.type == 'major-rc'
