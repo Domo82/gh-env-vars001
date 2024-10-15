@@ -29,7 +29,7 @@ jobs:
         uses: mathieudutour/github-tag-action@v6.2
         with:
           default_bump: major
-          github_token: ${{ env.GH_PAT }}
+          github_token: ${{ env.GH_TOKEN }}
           
           
   major-beta:
@@ -48,7 +48,7 @@ jobs:
         with:
           default_bump: major
           append_to_pre_release_tag: beta
-          github_token: ${{ env.GH_PAT }}
+          github_token: ${{ env.GH_TOKEN }}
           
   major-rc:
     if : github.event.inputs.type == 'major-rc'
@@ -66,4 +66,4 @@ jobs:
         with:
           default_bump: major
           append_to_pre_release_tag: rc
-          github_token: ${{ env.GH_PAT }}
+          github_token: ${{ env.GH_TOKEN }}
