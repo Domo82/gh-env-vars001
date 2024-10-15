@@ -1,4 +1,4 @@
-name: Cocogitto major bump
+name: Perform major bump
 on: 
   workflow_dispatch:
     inputs:
