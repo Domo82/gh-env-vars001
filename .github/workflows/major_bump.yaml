@@ -48,7 +48,7 @@ jobs:
         with:
           default_bump: major
           default_prerelease_bump: premajor
-          append_to_pre_release_tag: true
+          append_to_pre_release_tag: '-beta'
           github_token: ${{ env.GH_TOKEN }}
           
   major-rc:
