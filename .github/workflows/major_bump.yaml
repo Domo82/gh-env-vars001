@@ -1,4 +1,4 @@
-name: Perform major bump
+name: Perform a major bump
 on: 
   workflow_dispatch:
     inputs:
