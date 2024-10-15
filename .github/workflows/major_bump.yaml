@@ -11,13 +11,13 @@ on:
           - major
           - major-beta
           - major-rc
+env:
+  GH_TOKEN: ${{ secrets.GH_PAT }}
 jobs:
   major:
     if : github.event.inputs.type == 'major'
     permissions: write-all
     runs-on: ubuntu-latest
-    env:
-      GH_TOKEN: ${{ secrets.GH_PAT }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
