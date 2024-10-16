@@ -45,9 +45,10 @@ jobs:
         id: tag_version
         uses: mathieudutour/github-tag-action@v6.2
         with:
+          release_branches: hotfix
           pre_release_branches: main
           default_prerelease_bump: premajor
-          tag_prefix: p
+          tag_prefix: v
           append_to_pre_release_tag: beta
           github_token: ${{ env.GH_TOKEN }}
           
