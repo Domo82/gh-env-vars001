@@ -9,7 +9,8 @@ on:
         type: choice
         options: 
           - major
-          - major-prerelease
+          - major-beta
+          - major-rc
 env:
   GH_TOKEN: ${{ secrets.GH_PAT }}
 jobs:
@@ -30,8 +31,8 @@ jobs:
           default_bump: major
           github_token: ${{ env.GH_TOKEN }}
           
-  major-prerelease:
-    if : github.event.inputs.type == 'major-prerelease'
+  major-beta:
+    if : github.event.inputs.type == 'major-beta'
     permissions: write-all
     runs-on: ubuntu-latest
     steps:
@@ -48,5 +49,26 @@ jobs:
           pre_release_branches: main
           default_prerelease_bump: premajor
           tag_prefix: v
-          append_to_pre_release_tag: prerelease
+          append_to_pre_release_tag: beta
+          github_token: ${{ env.GH_TOKEN }}
+
+  major-rc:
+    if : github.event.inputs.type == 'major-rc'
+    permissions: write-all
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: Bump version and push tag
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v6.2
+        with:
+          release_branches: none
+          pre_release_branches: main
+          default_prerelease_bump: premajor
+          tag_prefix: v
+          append_to_pre_release_tag: rc
           github_token: ${{ env.GH_TOKEN }}
