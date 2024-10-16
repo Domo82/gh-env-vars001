@@ -50,7 +50,3 @@ jobs:
           tag_prefix: v
           append_to_pre_release_tag: prerelease
           github_token: ${{ env.GH_TOKEN }}
-          
-          tag_prefix: v
-          append_to_pre_release_tag: rc
-          github_token: ${{ env.GH_TOKEN }}
