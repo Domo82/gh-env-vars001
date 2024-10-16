@@ -1,15 +1,17 @@
-name: Perform a major bump
+name: Perform a manual bump
 on: 
   workflow_dispatch:
     inputs:
       type:
-        description: 'Major bump type'
+        description: 'Selection of bump types'
         required: true
         default: 'major'
         type: choice
         options: 
           - major
           - major-prerelease
+          - minor-prerelease
+          - patch-prerelease
 env:
   GH_TOKEN: ${{ secrets.GH_PAT }}
 jobs:
@@ -30,7 +32,7 @@ jobs:
           default_bump: major
           github_token: ${{ env.GH_TOKEN }}
           
-  major-beta:
+  major-prerelease:
     if : github.event.inputs.type == 'major-prerelease'
     permissions: write-all
     runs-on: ubuntu-latest
@@ -47,6 +49,48 @@ jobs:
           release_branches: none
           pre_release_branches: main
           default_prerelease_bump: premajor
+          tag_prefix: v
+          append_to_pre_release_tag: prerelease
+          github_token: ${{ env.GH_TOKEN }}
+
+  minor-prerelease:
+    if : github.event.inputs.type == 'minor-prerelease'
+    permissions: write-all
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: Bump version and push tag
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v6.2
+        with:
+          release_branches: none
+          pre_release_branches: main
+          default_prerelease_bump: preminor
+          tag_prefix: v
+          append_to_pre_release_tag: prerelease
+          github_token: ${{ env.GH_TOKEN }}
+
+  patch-prerelease:
+    if : github.event.inputs.type == 'patch-prerelease'
+    permissions: write-all
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: Bump version and push tag
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v6.2
+        with:
+          release_branches: none
+          pre_release_branches: main
+          default_prerelease_bump: prepatch
           tag_prefix: v
           append_to_pre_release_tag: prerelease
           github_token: ${{ env.GH_TOKEN }}
