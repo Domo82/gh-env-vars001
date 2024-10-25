@@ -1,0 +1,22 @@
+name: Check comments follow conventional commit
+on: [push, pull_request]
+
+jobs:
+  check_conventional_commit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Shallow clones should be disabled so we can bump on previous tags
+          fetch-tags: true # This should negate the need for fetch-depth 0 but it seems both are required
+
+      - name: Install Conventional Commits CLI
+        run: npm install -g @commitlint/cli @commitlint/config-conventional
+      
+      - name: Get latest tag
+        id: get-latest-tag
+        run: echo "::set-output name=tag::$(git describe --tags `git rev-list --tags --max-count=1`)"
+  
+      - name: Check Conventional Commits
+        run: commitlint --from $(git describe --tags --abbrev=0 HEAD^) --to HEAD
