@@ -25,6 +25,9 @@ jobs:
       - name: Get latest tag
         id: get-latest-tag
         run: echo "::set-output name=tag::$(git describe --tags `git rev-list --tags --max-count=1`)"
+
+      - name: Rebase on latest tag
+        run: git rebase -X theirs $(git describe --tags `git rev-list --tags --max-count=1`)
   
       - name: Check Conventional Commits
         run: commitlint --from $(git describe --tags --abbrev=0 HEAD^) --to HEAD
