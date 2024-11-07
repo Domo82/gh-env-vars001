@@ -19,25 +19,23 @@ jobs:
           fetch-depth: 0 # Shallow clones should be disabled so we can bump on previous tags
           fetch-tags: true # This should negate the need for fetch-depth 0 but it seems both are required
 
-      - name: Install Conventional Commits CLI
-        run: npm install -g @commitlint/cli @commitlint/config-conventional
-  
-      - name: Get latest tag
-        id: get-latest-tag
-        run: echo "::set-output name=tag::$(git describe --tags `git rev-list --tags --max-count=1`)"
-
-      - name: Rebase on latest tag
-        run: git rebase -X theirs $(git describe --tags `git rev-list --tags --max-count=1`)
-  
-      - name: Check Conventional Commits
-        run: commitlint --from $(git describe --tags --abbrev=0 HEAD^) --to HEAD
-      
-      - name: Bump version and push tag
-        id: tag_version
-        uses: mathieudutour/github-tag-action@v6.2
+      - name: Check for conventional commit
+        uses: cocogitto/cocogitto-action@v3.9
         with:
-          github_token: ${{ env.TOKEN }}
-      
+          check-latest-tag-only: true
+
+      - name: Get Next Version
+        id: next_version
+        run: |
+          echo NEXT_VERSION=`cog bump --auto --dry-run` >> "$GITHUB_ENV"
+
+      - name: Cocogitto release
+        id: release
+        uses: cocogitto/cocogitto-action@v3.9
+        with:
+          check-latest-tag-only: true
+          release: true      
+
       - name: Generate a changelog
         uses: orhun/git-cliff-action@v4
         id: git-cliff
@@ -49,9 +47,8 @@ jobs:
           GITHUB_REPO: ${{ github.repository }}
 
       - name: Create a GitHub release
-        id: release
         uses: ncipollo/release-action@v1
         with:
-          tag: ${{ steps.tag_version.outputs.new_tag }}
-          name: Release ${{ steps.tag_version.outputs.new_tag }}
-          body: ${{ steps.git-cliff.outputs.content }}    
+          tag: ${{ steps.release.outputs.version }}
+          name: Release ${{ steps.release.outputs.version }}
+          body: ${{ steps.git-cliff.outputs.content }}  
