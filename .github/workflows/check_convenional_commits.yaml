@@ -11,12 +11,7 @@ jobs:
           fetch-depth: 0 # Shallow clones should be disabled so we can bump on previous tags
           fetch-tags: true # This should negate the need for fetch-depth 0 but it seems both are required
 
-      - name: Install Conventional Commits CLI
-        run: npm install -g @commitlint/cli @commitlint/config-conventional
-      
-      - name: Get latest tag
-        id: get-latest-tag
-        run: echo "::set-output name=tag::$(git describe --tags `git rev-list --tags --max-count=1`)"
-  
-      - name: Check Conventional Commits
-        run: commitlint --from $(git describe --tags --abbrev=0 HEAD^) --to HEAD
+      - name: Check for conventional commit
+        uses: cocogitto/cocogitto-action@v3.9
+        with:
+          check-latest-tag-only: true
