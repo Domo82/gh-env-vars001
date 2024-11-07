@@ -18,23 +18,31 @@ jobs:
         with:
           fetch-depth: 0 # Shallow clones should be disabled so we can bump on previous tags
           fetch-tags: true # This should negate the need for fetch-depth 0 but it seems both are required
-
+          
       - name: Check for conventional commit
         uses: cocogitto/cocogitto-action@v3.9
         with:
           check-latest-tag-only: true
 
+      - name: Set up JQ
+        run: sudo apt-get install jq
+
+      - name: Download and install Cocogitto
+        run: |
+            REPO="cocogitto/cocogitto"
+            LATEST_COMMIT_SHA=$(curl -s https://api.github.com/repos/$REPO/commits | jq -r '.[0].sha')
+            curl -L "https://github.com/$REPO/archive/$LATEST_COMMIT_SHA.zip" -o cocogitto.zip
+            unzip cocogitto.zip
+            cd "cocogitto-$LATEST_COMMIT_SHA"
+            cargo build --release
+            sudo mv target/release/cog /usr/local/bin/
+            cd ..
+            rm -rf "cocogitto-$LATEST_COMMIT_SHA" cocogitto.zip
+
       - name: Get Next Version
         id: next_version
         run: |
-          echo NEXT_VERSION=`cog bump --auto --dry-run` >> "$GITHUB_ENV"
-
-      - name: Cocogitto release
-        id: release
-        uses: cocogitto/cocogitto-action@v3.9
-        with:
-          check-latest-tag-only: true
-          release: true      
+          echo NEXT_VERSION=`cog bump --auto` >> "$GITHUB_ENV"
 
       - name: Generate a changelog
         uses: orhun/git-cliff-action@v4
